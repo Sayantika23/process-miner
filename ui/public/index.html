@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Process Miner</title>
+
+    <link rel="stylesheet" href="css/master.css" />
+</head>
+
+<body>
+    <p>Search for Repositories</p>
+    <input id="query" type="text" placeholder="Enter query string" />
+    <button id="search">Search</button>
+
+    <div id="demo">
+        <div class="message">
+            <h3></h3>
+            <button id="process-repositories">Process Repositories</button>
+        </div>
+
+        <div class="column column-40">
+            <p>List of Available Repositories</p>
+
+            <ul id="repositories">
+                <li class="empty"><span class="empty-message">Search for repositories using keywords . . .</span></li>
+            </ul>
+        </div>
+
+        <div class="column column-40">
+            <p>List of Selected Repositories</p>
+
+            <ul id="selected-repositories">
+                <li class="empty"><span class="empty-message">No repositories added yet . . .</span></li>
+            </ul>
+        </div>
+
+        <div class="column column-20">
+            <p>List of Available Attributes</p>
+
+            <ul id="attributes"></ul>
+        </div>
+    </div>
+
+    <script>
+        window.App = {
+            name: 'Process Miner',
+            version: '0.0.1'
+        };
+    </script>
+    <script type="text/javascript" src="lib/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="scripts/core/github.js"></script>
+    <script type="text/javascript" src="scripts/core/repository.js"></script>
+    <script type="text/javascript" src="scripts/github-search.js"></script>
+    <script type="text/javascript" src="scripts/core/paginator.js"></script>
+    <script type="text/javascript" src="scripts/app.js"></script>
+</body>
+
+</html>

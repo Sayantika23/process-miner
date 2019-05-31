@@ -1,0 +1,73 @@
+* {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 5px;
+}
+
+li {
+    list-style-type: none;
+}
+
+p {
+    font-weight: bold;
+    color: #CC4444;
+}
+
+button {
+    padding: 7px;
+    border-radius: 5px;
+    background: #CC4444;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.column {
+    float: left;
+}
+
+.column-40 {
+    width: 39%;
+}
+
+.column-20 {
+    width: 19%;
+}
+
+#repositories button {
+    width: 16px;
+    height: 16px;
+    line-height: 0px;
+    text-align: center;
+    text-indent: -2px;
+}
+
+#repositories li {
+    cursor: pointer;
+}
+
+#repositories li:hover {
+    text-decoration: underline;
+}
+
+.empty-message {
+    color: #999;
+}
+
+li.empty:hover {
+    cursor: none !important;
+    text-decoration: none !important;
+}
+
+.language-stat {
+    display: inline-block;
+    border-radius: 5px;
+    background: #CEE;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+#selected-repositories li {
+    margin-bottom: 5px;
+    border-bottom: 1px solid #CCC;
+}
