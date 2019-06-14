@@ -7,8 +7,8 @@
     "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Sayantika Bhattacharya <sxb2606@g.rit.edu>",
-  "license": "Apache License 2.0",
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
     "body-parser": "^1.19.0",

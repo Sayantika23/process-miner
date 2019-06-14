@@ -29,7 +29,7 @@ class AttributesRunner {
 
                 const attributeToRun = attributesToRun[0];
 
-                console.log('Running', attributeToRun.name);
+                console.log('\n[RUNNING', attributeToRun.name, ']');
                 try {
                     attributeToRun.run(repository)
                         .then(data => {

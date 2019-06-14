@@ -1,4 +1,5 @@
-const fetch = require('axios');
+const axios = require('axios'),
+    DataLoader = require('./data-loader');
 
 function processParams(params) {
     if (!params) {
@@ -42,64 +43,47 @@ function replaceParams(text, paramsData) {
     return text;
 }
 
-class Repository {
-    constructor(url) {
-        this.url = url;
+function _fetch(repository) {
+    let searchString = 'github.com',
+        searchIncrement = 10,
+        url = repository.url;
+
+    repository.data = {};
+
+    if (url.indexOf('api.github.com/repos') !== -1) {
+        searchString = 'github.com/repos';
+        searchIncrement = 16;
     }
+    var fetchUrl = 'https://api.github.com/repos/' + url.substring(url.indexOf(searchString) + searchIncrement + 1);
 
-    json() {
-        return this;
-    }
-
-    mockFetch() {
-        return new Promise(resolve => {
-            const mockData = require('../mock/angular.json');
-            this.data = mockData.data;
-            this.extracted_data = mockData.extracted_data;
-
-            resolve(this);
-        });
-    }
-
-    fetch() {
-        var searchString = 'github.com';
-        var searchIncrement = 10;
-        var url = this.url;
-        this.data = {};
-
-        if (url.indexOf('api.github.com/repos') !== -1) {
-            searchString = 'github.com/repos';
-            searchIncrement = 16;
+    return fetch.get(fetchUrl, {
+        headers: {
+            'User-Agent': 'request'
         }
-        var fetchUrl = 'https://api.github.com/repos/' + url.substring(url.indexOf(searchString) + searchIncrement + 1);
+    }).then(repoData => {
+        repository.data = repoData.data;
 
-        return fetch.get(fetchUrl, {
-            headers: {
-                'User-Agent': 'request'
-            }
-        }).then(repoData => {
-            this.data = repoData.data;
+        return repository;
+    }).catch(error => {
+        repository.data = {
+            loaded: false,
+            error: error.message
+        };
 
-            return this;
-        }).catch(error => {
-            this.data = {
-                loaded: false,
-                error: error.message
-            };
+        return repository;
+    });
+}
 
-            return this;
-        });
-    }
-
-    get(category) {
+class GithubDataLoader extends DataLoader {
+    fetch(repository, category) {
         // If there is no data, then fetch the data first.
-        if (!this.data) {
+        if (!repository.data) {
             console.log('No Data Found', this);
-            return this.fetch().then(this.get(category));
+            return _fetch(repository).then(this.fetch(repository, category));
         }
 
         // Check the data for the URL of the chosen category.
-        if (this.data[category + '_url']) {
+        if (repository.data[category + '_url']) {
             var url = this.data[category + '_url'];
             var paramsData = processParams(url.match(/{[a-zA-Z0-9\/-_]+}/g));
 
@@ -112,7 +96,7 @@ class Repository {
 
             this.extracted_data = this.extracted_data || {};
 
-            return fetch(url).then(data => {
+            return axios(url).then(data => {
                 this.extracted_data[category] = data.data;
                 return this;
             }).catch(error => {
@@ -125,7 +109,7 @@ class Repository {
             // No URL found for the category.
             return Promise.reject('No URL found for category ' + category + '  ' + JSON.stringify(this.json()));
         }
-    };
+    }
 }
 
-module.exports = Repository;
+module.exports = GithubDataLoader;
