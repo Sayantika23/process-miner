@@ -4,6 +4,6 @@ module.exports = {
         'https://github.com/jquery/jquery',
         'https://github.com/lodash/lodash'
     ],
-    attributes: ['continuous-integration', 'community', 'history', 'license', 'issues'],
-    loader: 'cache'
+    attributes: ['documentation', 'continuous-integration', 'community', 'history', 'license', 'issues', 'stars'],
+    loader: 'github'
 };

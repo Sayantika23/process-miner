@@ -1,32 +1,67 @@
-var AttributesRunner = require('./attributes-runner');
-var Repository = require('./repository');
+function load(loader, repository, dependencies) {
+    if (dependencies.length === 0) {
+        return Promise.resolve(repository);
+    }
+
+    const dependency = dependencies.shift();
+
+    return repository.fetch(dependency, loader).then(() => {
+        return load(loader, repository, dependencies)
+    });
+}
+
+function runAttributes(repository, attributes) {
+    if (attributes.length === 0)
+        return Promise.resolve(repository);
+
+    const attribute = attributes.shift();
+
+    return attribute.run(repository).then(attributeResult => {
+        repository.attribute_results = repository.attribute_results || {};
+        repository.attribute_results[attribute.name] = attributeResult;
+        return runAttributes(repository, attributes.slice(0))
+    });
+}
+
+function processRepositories(repositories, attributes, processedRepos) {
+    if (repositories.length === 0)
+        return Promise.resolve(processedRepos);
+
+    const repository = repositories.shift();
+
+    return runAttributes(repository, attributes.slice(0).reverse()).then(() => {
+        processedRepos.push(repository);
+        return processRepositories(repositories.slice(0), attributes, processedRepos);
+    });
+}
 
 class ProcessMiner {
-    static process(repositories, attributes) {
-        const attributesRunner = new AttributesRunner(attributes);
+    static run(session) {
+        // First load the repository data.
+        let attributesToFetch = session.getAttributes().map(attribute => attribute.toFetch()),
+            dependencies = [];
 
-        return Promise.all(repositories.map(repo => attributesRunner.run(repo)));
+        if (attributesToFetch.length > 1) {
+            dependencies = attributesToFetch.reduce((prev, current) => prev.concat(current));
+        } else if (attributesToFetch.length === 1) {
+            dependencies = attributesToFetch[0];
+        }
 
-        // return new Promise((resolve, reject) => {
-        // First map the URLs to the Github Repos.
-        // var promises = [];
+        // Filter out redundancies to load a dependency only once across all attributes.
+        dependencies = dependencies.filter((dep, index) => dependencies.indexOf(dep) === index);
 
-        // repositoryUrls.map(repositoryUrl => {
-        //     const repository = new Repository(repositoryUrl);
-        //     const fetchPromise = repository.fetch();
+        const promises = [];
 
-        //     promises.push(fetchPromise);
+        session.getRepositories().forEach(repository => {
+            promises.push(load(session.getDataLoader(), repository, dependencies.slice(0)));
+        });
 
-        //     repoCategoriesToLoad.forEach(category => {
-        //         // repository.data.commits_url = 'asfaf';
-        //         console.log('LOADING', category);
-        //         fetchPromise.then(() => {
-        //             console.log('Finished fetching repo')
-        //         })
-        //         fetchPromise.then(repository.get(category).catch(error => console.log('ERROR LOADING', category, error)));
-        //     });
-        // });
-        // });
+        return Promise.all(promises).then(() => {
+            // console.log(JSON.stringify(session.getRepositories()));
+            return processRepositories(session.getRepositories(), session.getAttributes().reverse().slice(0), []);
+        }).catch(err => {
+            console.log('ERROR CAUGHT IN PROCESS MINER CLASS', '[', err, ']');
+        });
     }
 }
 

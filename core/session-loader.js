@@ -18,8 +18,6 @@ class SessionLoader {
     static load(sessionFile) {
         const session = require(sessionFile);
 
-        console.log('LOADED', session);
-
         return Session.create(
             session.repositories.map(url => new Repository(url)),
             session.attributes.map(name => new Attribute(name)),

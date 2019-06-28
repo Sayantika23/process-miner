@@ -1,8 +1,16 @@
 module.exports = {
     toFetch() {
-        return ['commits', 'issues'];
+        return ['loc'];
     },
     run: function (repository) {
-        return 'NOT IMPLEMENTED YET';
+        const commentLines = repository.extracted_data.loc.commentLines;
+        const codeLines = repository.extracted_data.loc.codeLines;
+        const Md = commentLines / (commentLines + codeLines);
+
+        return {
+            Md,
+            commentLines: commentLines,
+            nonBlankSourceCodeLines: codeLines
+        };
     }
 };

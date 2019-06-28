@@ -1,2 +1,2 @@
 // Start the server.
-require('./server').start();
+require('./web/server').start();

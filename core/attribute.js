@@ -8,18 +8,18 @@ class Attribute {
         this.fetchAttribute();
     }
 
+    fetchAttribute() {
+        if (!this.attributeRef) {
+            this.attributeRef = require(path.join('..', 'attributes', this.name));
+        }
+    }
+
     toFetch() {
         if (this.attributeRef.toFetch) {
             return this.attributeRef.toFetch();
         }
 
         return [];
-    }
-
-    fetchAttribute() {
-        if (!this.attributeRef) {
-            this.attributeRef = require(path.join('..', 'attributes', this.name));
-        }
     }
 
     run(repository) {
